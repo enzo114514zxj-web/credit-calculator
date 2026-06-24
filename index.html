@@ -214,6 +214,55 @@
       color: #9ca3af;
       margin-top: 4px;
     }
+    .calc-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .calc-item {
+      flex: 1;
+      min-width: 140px;
+    }
+    .calc-item label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    .calc-item input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .calc-item input:focus {
+      border-color: #1a56db;
+      box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+    }
+    .weight-tag {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #1a56db;
+      background: #dbeafe;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .calc-result {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #eff6ff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a56db;
+    }
     .btn-reset {
       margin-top: 16px;
       padding: 10px 24px;
@@ -298,9 +347,25 @@
           <span class="icon">A₄</span>
           最近三年营业利润加权总额
         </div>
-        <div class="options" id="a4-options">
-          <button class="option-btn" data-value="1">&gt;0 · 系数 1</button>
-          <button class="option-btn" data-value="0.5">≤0 · 系数 0.5</button>
+        <div class="calc-row">
+          <div class="calc-item">
+            <label>前一年 Pₜ₋₁（元）</label>
+            <input type="number" id="a4-p1" placeholder="请输入" step="0.01">
+            <span class="weight-tag">权重 50%</span>
+          </div>
+          <div class="calc-item">
+            <label>前两年 Pₜ₋₂（元）</label>
+            <input type="number" id="a4-p2" placeholder="请输入" step="0.01">
+            <span class="weight-tag">权重 30%</span>
+          </div>
+          <div class="calc-item">
+            <label>前三年 Pₜ₋₃（元）</label>
+            <input type="number" id="a4-p3" placeholder="请输入" step="0.01">
+            <span class="weight-tag">权重 20%</span>
+          </div>
+        </div>
+        <div class="calc-result" id="a4-result">
+          加权总额 = - &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₄ = -
         </div>
       </div>
 
@@ -310,9 +375,25 @@
           <span class="icon">A₅</span>
           最近三年净经营活动现金流加权总额
         </div>
-        <div class="options" id="a5-options">
-          <button class="option-btn" data-value="1">&gt;0 · 系数 1</button>
-          <button class="option-btn" data-value="0.5">≤0 · 系数 0.5</button>
+        <div class="calc-row">
+          <div class="calc-item">
+            <label>前一年 CFₜ₋₁（元）</label>
+            <input type="number" id="a5-c1" placeholder="请输入" step="0.01">
+            <span class="weight-tag">权重 50%</span>
+          </div>
+          <div class="calc-item">
+            <label>前两年 CFₜ₋₂（元）</label>
+            <input type="number" id="a5-c2" placeholder="请输入" step="0.01">
+            <span class="weight-tag">权重 30%</span>
+          </div>
+          <div class="calc-item">
+            <label>前三年 CFₜ₋₃（元）</label>
+            <input type="number" id="a5-c3" placeholder="请输入" step="0.01">
+            <span class="weight-tag">权重 20%</span>
+          </div>
+        </div>
+        <div class="calc-result" id="a5-result">
+          加权总额 = - &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₅ = -
         </div>
       </div>
 
@@ -385,9 +466,64 @@
         return num.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
       }
 
+      // 计算 A₄ 加权总额：Pₜ₋₁×50% + Pₜ₋₂×30% + Pₜ₋₃×20%
+      function calcA4Weighted() {
+        const p1 = parseFloat(document.getElementById('a4-p1').value) || 0;
+        const p2 = parseFloat(document.getElementById('a4-p2').value) || 0;
+        const p3 = parseFloat(document.getElementById('a4-p3').value) || 0;
+        return p1 * 0.5 + p2 * 0.3 + p3 * 0.2;
+      }
+
+      // 计算 A₅ 加权总额：CFₜ₋₁×50% + CFₜ₋₂×30% + CFₜ₋₃×20%
+      function calcA5Weighted() {
+        const c1 = parseFloat(document.getElementById('a5-c1').value) || 0;
+        const c2 = parseFloat(document.getElementById('a5-c2').value) || 0;
+        const c3 = parseFloat(document.getElementById('a5-c3').value) || 0;
+        return c1 * 0.5 + c2 * 0.3 + c3 * 0.2;
+      }
+
+      // 判断 A₄ 是否已输入完整（至少有一个非零值才视为已输入）
+      function hasA4Input() {
+        const p1 = document.getElementById('a4-p1').value.trim();
+        const p2 = document.getElementById('a4-p2').value.trim();
+        const p3 = document.getElementById('a4-p3').value.trim();
+        return p1 !== '' || p2 !== '' || p3 !== '';
+      }
+
+      function hasA5Input() {
+        const c1 = document.getElementById('a5-c1').value.trim();
+        const c2 = document.getElementById('a5-c2').value.trim();
+        const c3 = document.getElementById('a5-c3').value.trim();
+        return c1 !== '' || c2 !== '' || c3 !== '';
+      }
+
       // 判断是否所有系数都已选择
       function allSelected() {
-        return selections.a1 && selections.a2 && selections.a3 && selections.a4 && selections.a5;
+        return selections.a1 && selections.a2 && selections.a3 && hasA4Input() && hasA5Input();
+      }
+
+      // 更新 A₄ 和 A₅ 的显示和系数值
+      function updateA4A5() {
+        const a4Weighted = calcA4Weighted();
+        const a5Weighted = calcA5Weighted();
+        const a4ResultEl = document.getElementById('a4-result');
+        const a5ResultEl = document.getElementById('a5-result');
+
+        if (hasA4Input()) {
+          selections.a4 = a4Weighted > 0 ? 1 : 0.5;
+          a4ResultEl.innerHTML = '加权总额 = <b>' + formatMoney(a4Weighted) + '</b> &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₄ = <b>' + selections.a4 + '</b>';
+        } else {
+          selections.a4 = null;
+          a4ResultEl.innerHTML = '加权总额 = - &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₄ = -';
+        }
+
+        if (hasA5Input()) {
+          selections.a5 = a5Weighted > 0 ? 1 : 0.5;
+          a5ResultEl.innerHTML = '加权总额 = <b>' + formatMoney(a5Weighted) + '</b> &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₅ = <b>' + selections.a5 + '</b>';
+        } else {
+          selections.a5 = null;
+          a5ResultEl.innerHTML = '加权总额 = - &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₅ = -';
+        }
       }
 
       // 计算 A 值
@@ -397,6 +533,8 @@
 
       // 更新结果展示
       function updateResult() {
+        updateA4A5();
+
         const formulaEl = document.getElementById('formula-display');
         const resultRisk = document.getElementById('result-risk');
         const resultNet = document.getElementById('result-net');
@@ -406,7 +544,7 @@
         const netInput = parseFloat(document.getElementById('net-asset').value) || 0;
 
         if (!allSelected()) {
-          formulaEl.innerHTML = 'A = <span class="val">请先选择全部五项指标</span>';
+          formulaEl.innerHTML = 'A = <span class="val">请先选择全部五项指标并填写A₄、A₅数据</span>';
           resultRisk.textContent = '-';
           resultNet.textContent = '-';
           resultFinal.textContent = '-';
@@ -465,8 +603,16 @@
       bindOptions('a1-options', 'a1');
       bindOptions('a2-options', 'a2');
       bindOptions('a3-options', 'a3');
-      bindOptions('a4-options', 'a4');
-      bindOptions('a5-options', 'a5');
+
+      // A₄ 输入框监听
+      document.getElementById('a4-p1').addEventListener('input', updateResult);
+      document.getElementById('a4-p2').addEventListener('input', updateResult);
+      document.getElementById('a4-p3').addEventListener('input', updateResult);
+
+      // A₅ 输入框监听
+      document.getElementById('a5-c1').addEventListener('input', updateResult);
+      document.getElementById('a5-c2').addEventListener('input', updateResult);
+      document.getElementById('a5-c3').addEventListener('input', updateResult);
 
       // 输入框变化时更新结果
       document.getElementById('risk-asset').addEventListener('input', updateResult);
@@ -483,6 +629,12 @@
         document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('risk-asset').value = '';
         document.getElementById('net-asset').value = '';
+        document.getElementById('a4-p1').value = '';
+        document.getElementById('a4-p2').value = '';
+        document.getElementById('a4-p3').value = '';
+        document.getElementById('a5-c1').value = '';
+        document.getElementById('a5-c2').value = '';
+        document.getElementById('a5-c3').value = '';
 
         updateResult();
       });
