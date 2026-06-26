@@ -322,7 +322,7 @@
           <button class="option-btn" data-value="0.8">[80%, 90%) · 系数 0.8</button>
           <button class="option-btn" data-value="0.7">[70%, 80%) · 系数 0.7</button>
           <button class="option-btn" data-value="0.6">[60%, 70%) · 系数 0.6</button>
-          <button class="option-btn" data-value="1">[0%, 60%) · 系数 1</button>
+
         </div>
       </div>
 
@@ -510,7 +510,7 @@
         const a5ResultEl = document.getElementById('a5-result');
 
         if (hasA4Input()) {
-          selections.a4 = a4Weighted > 0 ? 1 : 0.5;
+          selections.a4 = a4Weighted > 0 ? 1 : 0.8;
           a4ResultEl.innerHTML = '加权总额 = <b>' + formatMoney(a4Weighted) + '</b> &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₄ = <b>' + selections.a4 + '</b>';
         } else {
           selections.a4 = null;
@@ -518,7 +518,7 @@
         }
 
         if (hasA5Input()) {
-          selections.a5 = a5Weighted > 0 ? 1 : 0.5;
+          selections.a5 = a5Weighted > 0 ? 1 : 0.8;
           a5ResultEl.innerHTML = '加权总额 = <b>' + formatMoney(a5Weighted) + '</b> &nbsp;&nbsp;|&nbsp;&nbsp; 系数 A₅ = <b>' + selections.a5 + '</b>';
         } else {
           selections.a5 = null;
